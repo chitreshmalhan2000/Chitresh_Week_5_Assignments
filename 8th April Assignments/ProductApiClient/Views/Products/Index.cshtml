@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "Products";
+    var apiBaseUrl = ViewBag.ApiBaseUrl as string ?? "";
+}
+
+<h2>Products from Azure Web API (jQuery AJAX)</h2>
+
+<div id="productsTable" class="table-responsive">
+    <table class="table table-striped" id="products">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data loaded via AJAX -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Create Form -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h4>Add New Product</h4>
+    </div>
+    <div class="card-body">
+        <form id="createForm">
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+                <input type="text" class="form-control" id="category" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Price</label>
+                <input type="number" step="0.01" class="form-control" id="price" required />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Stock</label>
+                <input type="number" class="form-control" id="stock" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const apiBaseUrl = '@apiBaseUrl';
+
+        // Load products on page load
+        $(document).ready(function () {
+            loadProducts();
+        });
+
+        // GET - Load all products
+        function loadProducts() {
+            $.ajax({
+                url: `${apiBaseUrl}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    let html = '';
+                    data.forEach(function (product) {
+                        html += `
+                            <tr>
+                                <td>${product.name}</td>
+                                <td>${product.category}</td>
+                                <td>$${product.price.toFixed(2)}</td>
+                                <td>${product.stock}</td>
+                            </tr>`;
+                    });
+                    $('#products tbody').html(html);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading products:', error);
+                    alert('Failed to load products: ' + error);
+                }
+            });
+        }
+
+        // POST - Create new product
+        $('#createForm').on('submit', function (e) {
+            e.preventDefault();
+
+            const product = {
+                name: $('#name').val(),
+                category: $('#category').val(),
+                price: parseFloat($('#price').val()),
+                stock: parseInt($('#stock').val())
+            };
+
+            $.ajax({
+                url: `${apiBaseUrl}`,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(product),
+                success: function (data) {
+                    alert('Product created successfully!');
+                    $('#createForm')[0].reset();
+                    loadProducts(); // Refresh list
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error creating product:', error);
+                    alert('Failed to create product: ' + error);
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "AzureFunctionsTangyWeb\\AzureFunctionExample.csproj",
+        "Action": "Start",
+        "DebugTarget": "IIS Express"
+      },
+      {
+        "Path": "TangyAzureFun\\TangyAzureFun.csproj",
+        "Action": "Start",
+        "DebugTarget": "TangyAzureFun"
+      }
+    ]
+  }
+]
